@@ -41,11 +41,11 @@ Instructions:
         if (req.status === 200) {
           resolve(req.response);    // it worked! - .then with the response text
         } else {
-          reject(req.statusText);   // it failed! - .catch with the status text
+          reject(Error(req.statusText));   // it failed! - .catch with the status text
         }
       };
       req.onerror = function () {
-        reject('Network Error');    // failed! - pass a 'Network Error' to reject
+        reject(Error('Network Error'));    // failed! - pass a 'Network Error' to reject
       };
       req.send();
     });
@@ -59,7 +59,10 @@ Instructions:
     pass 'unknown' to addSearchHeader if it rejects.
      */
     get('../data/earth-like-results.json')
-    .then(responseText => console.log(`${responseText}`))
-    .catch(errorText => console.log(`${errorText}`));
+    .then(response => addSearchHeader(`${response}`))   // pass to func above
+    .catch((error) => {
+      addSearchHeader('unknown');                       // also use func above
+      console.log(`${error}`);
+    });
   });
 })(document);
