@@ -32,9 +32,12 @@ Instructions:
     /*
     Use the Fetch API to GET a URL.
     Return the fetch.
-
-    Your code goes here!
      */
+    return new Promise((resolve, reject) => {
+      fetch(url, { method: 'get' })
+      .then(response => resolve(response))
+      .catch(error => reject(error));
+    });
   }
 
   /**
@@ -45,9 +48,16 @@ Instructions:
   function getJSON(url) {
     /*
     Return a Promise that gets a URL and parses the JSON response. Use your get method!
-
-    Your code goes here!
      */
+    return new Promise((resolve, reject) => {
+      get(url)
+      .then((response)=>{
+        console.log(response.json());  // log out the object
+      })
+      .catch((e) => {
+        console.log(Error(e));         // log out error
+      });
+    });
   }
 
   window.addEventListener('WebComponentsReady', function() {
