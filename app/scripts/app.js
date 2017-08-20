@@ -33,11 +33,14 @@ Instructions:
     Use the Fetch API to GET a URL.
     Return the fetch.
      */
-    return new Promise((resolve, reject) => {
-      fetch(url, { method: 'get' })
-      .then(response => resolve(response))
-      .catch(error => reject(error));
-    });
+    //return new Promise((resolve, reject) => {
+    //  fetch(url, { method: 'get' })
+    //})
+    //.then(response => resolve(response))
+    //.catch(error => reject(error));
+
+    // correction based on instructor input
+    return fetch(url);   // see fetch API documentation for this promise - 'method' defaults to 'get'
   }
 
   /**
@@ -49,14 +52,9 @@ Instructions:
     /*
     Return a Promise that gets a URL and parses the JSON response. Use your get method!
      */
-    return new Promise((resolve, reject) => {
-      get(url)
-      .then((response)=>{
-        console.log(response.json());  // log out the object
-      })
-      .catch((e) => {
-        console.log(Error(e));         // log out error
-      });
+    return get(url)
+    .then((response) => {
+      return response.json();  // specific to fetch API, but like json.parse
     });
   }
 
@@ -65,9 +63,18 @@ Instructions:
     /*
     Uncomment the next line when you're ready to test!
     Don't forget to chain with a .then and a .catch!
-
-    Your code goes here too!
      */
-    // getJSON('../data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
+    .then((response) => {
+      addSearchHeader(response.query);    // show the query
+      return response.results[0];         // return the first json result
+    })
+    .then((url) => {
+      console.log(url);   // log the url of the first json result (chaining on the first then)
+    });
+    //.catch((error) => {
+    // addSearchHeader('unknown');
+    //  console.log(error);
+    //});
   });
 })(document);
