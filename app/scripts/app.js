@@ -64,6 +64,21 @@ Instructions:
 
     Your code goes here!
      */
-    // getJSON('../data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
+    .then((response) => {
+      addSearchHeader(response.query);      // get planet query and add search header
+      return getJSON(response.results[0]);  // the first planet
+    })
+    .catch( () => {
+      throw Error('Search Request Error')
+    })
+    .then((planetData) => {
+      console.log(planetData);
+      createPlanetThumb(planetData);        // create the first planet img
+    })
+    .catch((error) => {
+      addSearchHeader('unknown');           // catch errors
+      console.log(error);
+    });
   });
 })(document);
