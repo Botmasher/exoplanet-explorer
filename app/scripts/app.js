@@ -58,7 +58,14 @@ Instructions:
     /*
     Your code goes here! Uncomment the next line when you're ready to start!
      */
-
-    // getJSON('../data/earth-like-results.json')
+    getJSON('../data/earth-like-results.json')
+    .then((response) => {
+      response.results.map((url) => {           // run function against every elem
+        getJSON(url).then(createPlanetThumb);   // use the returned promise on each url
+      });                                       // and .then on it to create each thumb!
+    })
+    .catch((e) => {
+      console.log(e);
+    })
   });
 })(document);
