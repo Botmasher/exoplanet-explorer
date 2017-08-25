@@ -60,13 +60,26 @@ Hint: you'll probably still need to use .map.
     Refactor this code with Promise.all!
      */
     getJSON('../data/earth-like-results.json')
-    .then(function(response) {
-
-      addSearchHeader(response.query);
-
-      response.results.map(function(url) {
-        getJSON(url).then(createPlanetThumb);
+    .then(function (response) {
+      addSearchHeader(response.query);              // add some innerHTML
+      var promises = response.results.map(getJSON); // remember this wraps XHR in promise
+      return Promise.all(promises);   // pass thru a bunch of already-executed promises
+    })
+    .then((planetsData) => {
+      planetsData.forEach((planet) => {
+        createPlanetThumb(planet);
       });
+    })
+    .catch((e) => {
+      console.log(e);
     });
+
+    // // my INITIAL solution before input from instructor answer
+    // getJSON('../data/earth-like-results.json')
+    // .then((response) => {
+    //   Promise.all(response.results.map((url) => {
+    //     getJSON(url).then(createPlanetThumb);
+    //   }));
+    // })
   });
 })(document);
