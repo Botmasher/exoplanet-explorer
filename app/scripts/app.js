@@ -26,11 +26,14 @@ proper order even if all the requests haven't finished.
    * @param  {Object} data - The raw data describing the planet.
    */
   function createPlanetThumb(data) {
-    var pT = document.createElement('planet-thumb');
-    for (var d in data) {
-      pT[d] = data[d];
-    }
-    home.appendChild(pT);
+    return new Promise((resolve) => {
+      var pT = document.createElement('planet-thumb');
+      for (var d in data) {
+        pT[d] = data[d];
+      }
+      home.appendChild(pT);
+      resolve();
+    });
   }
 
   /**
@@ -48,16 +51,42 @@ proper order even if all the requests haven't finished.
    * @return {Promise}    - A promise that passes the parsed JSON response.
    */
   function getJSON(url) {
-    return get(url).then(function(response) {
-      return response.json();
+    // hold off one img to test if parallel loading vs serial thumbing worked
+    return get(url).then((response) => {
+      if (url.substring('-69c') !== -1) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(response.json());
+          }, 1000);
+        });
+      } else {
+        return response.json;
+      }
     });
   }
 
   window.addEventListener('WebComponentsReady', function() {
     home = document.querySelector('section[data-route="home"]');
-    /*
-    Your code goes here!
-     */
-    // getJSON('../data/earth-like-results.json')
+    
+    /* Your code goes here! */
+    getJSON('../data/earth-like-results.json')
+    .then((response) => {
+      addSearchHeader(response.query);
+      return response;
+    })
+    .then((response) => {
+      var promises = Promise.resolve();
+      var promiseArray = response.results.map((result) => {
+        return getJSON(result);
+      });
+      promiseArray.forEach((jsonreq) => {
+        promises = promises.then(() => {
+          return jsonreq.then(createPlanetThumb);
+        });
+      });
+    })
+    .catch((e) => {
+      console.log(e);
+    });
   });
 })(document);
